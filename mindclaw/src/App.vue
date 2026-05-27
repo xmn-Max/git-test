@@ -44,21 +44,34 @@ const messages = ref([
   }
 ])
 
-function sendMessage() {
+async function sendMessage() {
 
   if (!inputText.value) return
 
+  const userText = inputText.value
+
+  // 用户消息
   messages.value.push({
     role: 'user',
-    text: inputText.value
+    text: userText
   })
 
+  // 清空输入框
+  inputText.value = ''
+
+  // 请求 Flask API
+  const res = await fetch(
+    'http://127.0.0.1:5000/chat?msg=' + userText
+  )
+
+  const data = await res.json()
+
+  // AI消息
   messages.value.push({
     role: 'ai',
-    text: '我收到你的消息了：' + inputText.value
+    text: data.reply
   })
 
-  inputText.value = ''
 }
 </script>
 
